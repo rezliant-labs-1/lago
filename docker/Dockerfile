@@ -63,4 +63,12 @@ EXPOSE 80
 EXPOSE 3000
 VOLUME /data
 
+# Modified by Rezliant AI, 2026-09-17 16:45:27 GMT, add non-root user for container security
+RUN groupadd -r lagoapp && useradd -r -g lagoapp lagoapp && \
+  chown -R lagoapp:lagoapp /app /data /etc/nginx /var/log/nginx /var/lib/nginx /run
+
+USER lagoapp
+
+# Original Code
+# ENTRYPOINT ["./runner.sh"]
 ENTRYPOINT ["./runner.sh"]
