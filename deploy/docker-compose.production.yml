@@ -85,14 +85,14 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.email=${LAGO_ACME_EMAIL:-your_email@example.com}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
-    # @rezliant RZ-C2575C17 · 2026-10-06 — Prevents unrestricted external network exposure
     ports:
-      - 127.0.0.1:8080:8080
-      - 127.0.0.1:443:443
+      - 8080:8080
+      - 443:443
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
       
+  # @rezliant RZ-04075B9E · 2026-10-06 — Restricts database access to internal container network
   db:
     <<: *postgres-image
     container_name: lago-db
@@ -115,8 +115,6 @@ services:
       POSTGRES_SCHEMA: public
     volumes:
       - lago_postgres_data:/data/postgres
-    ports:
-      - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
     profiles:
       - all
       - all-no-redis
@@ -475,10 +473,10 @@ services:
       - "traefik.http.middlewares.portainer-stripprefix.stripprefix.prefixes=/portainer"
 
 # @rezliant-change-log:start
-# RZ-C2575C17 · 2026-10-06 · Traefik ports exposed on all network interfaces
-# Change: Bound ports 8080 and 443 to localhost (127.0.0.1) only
-# Benefit: Prevents unrestricted external network exposure
-# Scope: traefik service ports configuration
+# RZ-04075B9E · 2026-10-06 · PostgreSQL host port binding exposes database to external networks
+# Change: Removed ports section from db service configuration
+# Benefit: Restricts database access to internal container network
+# Scope: db service
 #
 # Rezliant remediation history: 1 total · 1 most recent shown
 # @rezliant-change-log:end
