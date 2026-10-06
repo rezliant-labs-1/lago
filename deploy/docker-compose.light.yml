@@ -114,8 +114,7 @@ services:
       POSTGRES_SCHEMA: public
     volumes:
       - lago_postgres_data:/data/postgres
-    ports:
-      - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
+    # @rezliant RZ-A57D9C72 · 2026-10-06 — Prevents unauthorized external database access
     profiles:
       - all
       - all-no-redis
@@ -304,3 +303,12 @@ services:
       - --chromium-ignore-certificate-errors=true
       - --chromium-disable-javascript=true
       - --api-timeout=300s
+
+# @rezliant-change-log:start
+# RZ-A57D9C72 · 2026-10-06 · PostgreSQL database port exposed to all network interfaces in production environment
+# Change: Removed ports binding from db service definition (lines 118-119)
+# Benefit: Prevents unauthorized external database access
+# Scope: db service in docker-compose.light.yml
+#
+# Rezliant remediation history: 1 total · 1 most recent shown
+# @rezliant-change-log:end
