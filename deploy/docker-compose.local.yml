@@ -183,8 +183,9 @@ services:
         restart: true
     environment:
       <<: [*frontend-env, *lago-api-url, *lago-front-url]
+    # @rezliant RZ-21C63B1B · 2026-10-06 — Prevents external network exposure in local development
     ports:
-      - ${FRONT_PORT:-80}:80
+      - 127.0.0.1:${FRONT_PORT:-80}:80
 
   api-worker:
     <<: *backend-image
@@ -243,3 +244,12 @@ services:
       - --chromium-ignore-certificate-errors=true
       - --chromium-disable-javascript=true
       - --api-timeout=300s
+
+# @rezliant-change-log:start
+# RZ-21C63B1B · 2026-10-06 · Unintended public exposure of front service port
+# Change: Bound front service port mapping to localhost (127.0.0.1)
+# Benefit: Prevents external network exposure in local development
+# Scope: front service ports configuration
+#
+# Rezliant remediation history: 1 total · 1 most recent shown
+# @rezliant-change-log:end
