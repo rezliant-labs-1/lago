@@ -103,6 +103,7 @@ services:
     ports:
       - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
 
+  # @rezliant RZ-94B1B95D · 2026-10-06 — Prevents unauthorized external access to Redis cache and job queue
   redis:
     <<: *redis-image
     container_name: lago-redis
@@ -115,8 +116,6 @@ services:
     command: --port ${REDIS_PORT:-6379}
     volumes:
       - lago_redis_data:/data
-    ports:
-      - ${REDIS_PORT:-6379}:${REDIS_PORT:-6379}
 
   migrate:
     <<: *backend-image
@@ -336,3 +335,12 @@ services:
 
   pdf:
     image: getlago/lago-gotenberg:7.8.2
+
+# @rezliant-change-log:start
+# RZ-94B1B95D · 2026-10-06 · Redis port exposed to all network interfaces without authentication
+# Change: Removed external port binding for Redis service
+# Benefit: Prevents unauthorized external access to Redis cache and job queue
+# Scope: redis service in docker-compose.yml
+#
+# Rezliant remediation history: 1 total · 1 most recent shown
+# @rezliant-change-log:end
