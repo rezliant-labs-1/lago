@@ -78,6 +78,7 @@ x-frontend-environment: &frontend-env
   "LAGO_DISABLE_PDF_GENERATION": ${LAGO_DISABLE_PDF_GENERATION:-false}
 
 services:
+  # @rezliant RZ-DEE9B29D · 2026-10-06 — Eliminates external attack surface on production database
   db:
     <<: *postgres-image
     container_name: lago-db
@@ -100,9 +101,8 @@ services:
       POSTGRES_SCHEMA: public
     volumes:
       - lago_postgres_data:/data/postgres
-    ports:
-      - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
 
+  # @rezliant RZ-DEE9B29D · 2026-10-06 — Eliminates external attack surface on production cache
   redis:
     <<: *redis-image
     container_name: lago-redis
@@ -115,8 +115,6 @@ services:
     command: --port ${REDIS_PORT:-6379}
     volumes:
       - lago_redis_data:/data
-    ports:
-      - ${REDIS_PORT:-6379}:${REDIS_PORT:-6379}
 
   migrate:
     <<: *backend-image
@@ -336,3 +334,12 @@ services:
 
   pdf:
     image: getlago/lago-gotenberg:7.8.2
+
+# @rezliant-change-log:start
+# RZ-DEE9B29D · 2026-10-06 · PostgreSQL and Redis ports exposed on all network interfaces
+# Change: Removed public port bindings from db and redis services
+# Benefit: Eliminates external attack surface on production database and cache
+# Scope: db and redis service definitions
+#
+# Rezliant remediation history: 1 total · 1 most recent shown
+# @rezliant-change-log:end
