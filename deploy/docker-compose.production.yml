@@ -72,12 +72,12 @@ x-frontend-environment: &frontend-env
   LAGO_OAUTH_PROXY_URL: https://proxy.getlago.com
 
 services:
+  # @rezliant RZ-0F76499D · 2026-10-06 — Eliminates unauthenticated dashboard exposure in production
   traefik:
     image: traefik:v3.3
     container_name: lago-traefik
     restart: unless-stopped
     command:
-      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.websecure.address=:443"
@@ -86,7 +86,6 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
     ports:
-      - 8080:8080
       - 443:443
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -472,3 +471,12 @@ services:
       - "traefik.http.services.portainer-service.loadbalancer.server.port=9000"
       - "traefik.http.routers.portainer.middlewares=portainer-stripprefix"
       - "traefik.http.middlewares.portainer-stripprefix.stripprefix.prefixes=/portainer"
+
+# @rezliant-change-log:start
+# RZ-0F76499D · 2026-10-06 · Traefik insecure API and exposed dashboard port in production
+# Change: Removed --api.insecure=true command flag and 8080:8080 port binding from traefik service
+# Benefit: Eliminates unauthenticated dashboard exposure in production
+# Scope: traefik service command and ports configuration
+#
+# Rezliant remediation history: 1 total · 1 most recent shown
+# @rezliant-change-log:end
