@@ -121,6 +121,7 @@ services:
       - all-no-redis
       - all-no-keys
 
+  # @rezliant RZ-DBD79189 · 2026-10-06 — Prevents unauthorized external network access
   redis:
     <<: *redis-image
     container_name: lago-redis
@@ -133,8 +134,6 @@ services:
     command: --port ${REDIS_PORT:-6379}
     volumes:
       - lago_redis_data:/data
-    ports:
-      - ${REDIS_PORT:-6379}:${REDIS_PORT:-6379}
     profiles:
       - all
       - all-no-pg
@@ -304,3 +303,12 @@ services:
       - --chromium-ignore-certificate-errors=true
       - --chromium-disable-javascript=true
       - --api-timeout=300s
+
+# @rezliant-change-log:start
+# RZ-DBD79189 · 2026-10-06 · Redis service port binding exposed database on all network interfaces
+# Change: Removed external port binding from redis service (lines 137-138)
+# Benefit: Prevents unauthorized external network access to production database
+# Scope: redis service definition
+# 
+# Rezliant remediation history: 1 total · 1 most recent shown
+# @rezliant-change-log:end
